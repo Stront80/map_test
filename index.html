@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Моя карта с геолокацией</title>
+    <!-- Подключаем стили Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { 
+            height: 100vh; /* Карта на весь экран */
+            width: 100%; 
+        }
+        body { margin: 0; }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <!-- Подключаем скрипт Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // 1. Создаем карту и задаем начальный вид
+        const map = L.map('map').setView([0, 0], 2);
+
+        // 2. Добавляем слой карты OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 3. Функция для обработки координат пользователя
+        function onPositionFound(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // Добавляем маркер в местоположение пользователя
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup('Вы находитесь здесь!')
+                .openPopup();
+
+            // Центрируем карту на пользователе с хорошим масштабом
+            map.setView([lat, lon], 15);
+        }
+
+        function onPositionError(error) {
+            alert('Не удалось определить местоположение: ' + error.message);
+        }
+
+        // 4. Запрашиваем геолокацию при загрузке страницы
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(onPositionFound, onPositionError);
+        } else {
+            alert('Ваш браузер не поддерживает геолокацию');
+        }
+    </script>
+</body>
+</html>
